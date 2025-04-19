@@ -206,9 +206,10 @@ public class MongoStoragePlugin extends AbstractStoragePlugin {
     try {
         return addressClientMap.get(key, () -> {
         MongoClientSettings.Builder settings;
-        if (clientURI.isSrvProtocol()) {
+        if (clientURI.isSrvProtocol() || clientURI.isDirectConnection()) {
           settings = MongoClientSettings.builder().applyConnectionString(clientURI);
-          logger.info("Created srv protocol connection to {}.", key);
+          String type = clientURI.isSrvProtocol() ? "srv protocol" : "direct";
+          logger.info("Created {} connection to {}.", type, key);
         } else {
           settings = MongoClientSettings.builder().applyToClusterSettings(builder -> builder.hosts(addresses));
           if (credential != null) {
